@@ -28,7 +28,7 @@ const Navbar = () => {
         </div>
         {/* link list */}
         <div
-          className={`w-full h-screen flex flex-col items-center gap font-medium text-lg justify-center absolute top-16 transition-all ease-in-out ${
+          className={` w-full h-screen flex flex-col items-center gap font-medium text-lg justify-center absolute top-16 bg-blue-100 transition-all ease-in-out ${
             open ? "-right-0" : "-right-[100%]"
           }`}
         >
@@ -38,7 +38,7 @@ const Navbar = () => {
           <Link to="/">About</Link>
           <Link to="/">
             <button className="py-2 px-4 rounded-3xl bg-blue-800 text-white">
-              Login
+              {`Login`}
             </button>
           </Link>
         </div>

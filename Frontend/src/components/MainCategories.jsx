@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
-import { CiSearch } from "react-icons/ci";
+import Search from "./Search";
 
 const MainCategories = () => {
   return (
@@ -50,14 +50,7 @@ const MainCategories = () => {
         </Link>
       </div>
       <span className="text-xl font-medium">|</span>
-      <div className="bg-gray-100 p-2 rounded-full flex items-center gap-2">
-        <CiSearch />
-        <input
-          type="text"
-          className="bg-transparent"
-          placeholder="search a post..."
-        />
-      </div>
+      <Search />
     </div>
   );
 };

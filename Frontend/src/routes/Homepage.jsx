@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router";
 import MainCategories from "../components/MainCategories";
 import FeaturedPosts from "../components/FeaturedPosts";
+import PostList from "../components/PostList";
 
 const Homepage = () => {
   return (
@@ -69,6 +70,8 @@ const Homepage = () => {
       {/* featured post*/}
       <FeaturedPosts />
       {/* Breadcrumbs */}
+      <h1 className="my-8 text-2xl text-gray-600">Recent Post</h1>
+      <PostList />
     </div>
   );
 };
