@@ -1,22 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "./Image";
 import { Link } from "react-router";
 import {
   SignedIn,
   SignedOut,
   SignInButton,
+  useAuth,
   UserButton,
 } from "@clerk/clerk-react";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { getToken } = useAuth();
+
+  useEffect(() => {
+    getToken().then((token) => {
+      console.log(token);
+    });
+  }, []);
 
   return (
     <div className="w-full h-16 md:h-20 flex items-center justify-between">
       {/* Logo */}
       <Link to="/" className="flex items-center gap-4 text-2xl font-bold">
-        <Image src="logo.png" alt="Lama logo" w={32} h={32} />
-        <span>Lama Log</span>
+        <Image src="logo.png" alt="logo" w={72} h={72} className="rounded-lg" />
+        <span>Blog HUB</span>
       </Link>
       {/* mobile menu */}
       <div className="md:hidden">
