@@ -1,5 +1,6 @@
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
+import ImageKit from "imagekit";
 
 export const getPosts = async (req, res) => {
   const posts = await Post.find();
@@ -12,22 +13,25 @@ export const getPost = async (req, res) => {
 };
 
 export const createPost = async (req, res) => {
-  const clerkUserId = req.auth().userId;
+  const clerkUserId = req.auth.userId;
   if (!clerkUserId) {
     return res.status(200).json("Not authenticated");
   }
 
   const user = await User.findOne({ clerkUserId });
 
-  let slug = req.body.title.replace(/ /g, "-").toLowerCase();
-  console.log(slug);
+  if (!user) {
+    return res.status(404).json("User not found");
+  }
+
+  let slugBase = req.body.title.replace(/ /g, "-").toLowerCase();
+  let slug = slugBase;
 
   let existingPost = await Post.findOne({ slug });
-
   let counter = 2;
 
   while (existingPost) {
-    slug = `${slug}-${counter}`;
+    slug = `${slugBase}-${counter}`;
     existingPost = await Post.findOne({ slug });
     counter++;
   }
@@ -56,4 +60,15 @@ export const deletePost = async (req, res) => {
   }
 
   res.status(200).send("Post has been deleted");
+};
+
+const imagekit = new ImageKit({
+  urlEndpoint: process.env.YOUR_IMAGEKIT_URL_ENDPOINT,
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+});
+
+export const uploadAuth = async (req, res) => {
+  const result = imagekit.getAuthenticationParameters();
+  res.send(result);
 };

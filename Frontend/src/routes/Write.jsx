@@ -3,11 +3,33 @@ import { SignIn, useAuth, useUser } from "@clerk/clerk-react";
 import "react-quill-new/dist/quill.snow.css";
 import ReactQuill from "react-quill-new";
 import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import Upload from "../components/Upload";
+import { useEffect } from "react";
 
 const Write = () => {
   const { isLoaded, isSignedIn } = useUser();
   const [value, setValue] = useState("");
+  const [cover, setCover] = useState("");
+  const [img, setImg] = useState("");
+  const [video, setVideo] = useState("");
+  const [progress, setProgress] = useState(0);
   const { getToken } = useAuth();
+
+  useEffect(() => {
+    img && setValue((prev) => prev + `<p><image src="${img.url}"/></p>`);
+  }, [img]);
+
+  useEffect(() => {
+    video &&
+      setValue(
+        (prev) => prev + `<p><image class="ql-video"  src="${video.url}"/></p>`
+      );
+  }, [video]);
+
+  const navigate = useNavigate();
 
   const mutation = useMutation({
     mutationFn: async (newPost) => {
@@ -17,6 +39,10 @@ const Write = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+    },
+    onSuccess: (res) => {
+      toast.success("Post has been created");
+      navigate(`/${res.data.slug}`);
     },
   });
 
@@ -37,6 +63,7 @@ const Write = () => {
     const formData = new FormData(e.target);
 
     const data = {
+      img: cover.path || "",
       title: formData.get("title"),
       category: formData.get("category"),
       desc: formData.get("desc"),
@@ -53,9 +80,11 @@ const Write = () => {
         onSubmit={handleSubmit}
         className="flex flex-col gap-6  flex-1 mb-6"
       >
-        <button className="p-2 w-max shadow-md rounded-xl text-sm text-gray-500 bg-white">
-          Add a cover image
-        </button>
+        <Upload type="image" setProgress={setProgress} setData={setCover}>
+          <button className="p-2 w-max shadow-md rounded-xl text-sm text-gray-500 bg-white">
+            Add a cover image
+          </button>
+        </Upload>
         <input
           type="text"
           placeholder="My Awesome Story"
@@ -71,7 +100,7 @@ const Write = () => {
             id=""
             className="p-2 rounded-xl bg-white shadow-md"
           >
-            <option value="eneral">General</option>
+            <option value="General">General</option>
             <option value="web-design">Web design</option>
             <option value="development">Development</option>
             <option value="databases">Databases</option>
@@ -84,15 +113,32 @@ const Write = () => {
           placeholder="A short description"
           className="p-4 rounded-xl bg-white shadow-md"
         />
-        <ReactQuill
-          theme="snow"
-          className="flex-1 p-2 rounded-xl bg-white shadow-md"
-          value={value}
-          onChange={setValue}
-        />
-        <button className="bg-blue-800 text-white font-medium rounded-xl mt-4 p-2 w-36">
-          Send
+        <div className="flex flex-1">
+          <div className="flex flex-col gap-2 mr-2">
+            <Upload type="image" setProgress={setProgress} setData={setImg}>
+              🖼️
+            </Upload>
+            <Upload type="vifeo" setProgress={setProgress} setData={setVideo}>
+              📽️
+            </Upload>
+          </div>
+
+          <ReactQuill
+            theme="snow"
+            className="flex-1 rounded-xl bg-white shadow-md h-"
+            value={value}
+            onChange={setValue}
+            readOnly={0 < progress && progress < 100}
+          />
+        </div>
+        <button
+          disabled={mutation.isPending || (0 < progress && progress < 100)}
+          className="bg-blue-800 text-white font-medium rounded-xl mt-4 p-2 w-36 disabled:bg-blue-400 disabled:cursor-not-allowed"
+        >
+          {mutation.isPending ? "Loading..." : "Send"}
         </button>
+        {"Progress:" + progress}
+        {mutation.isError && <span>{mutation.error.message}</span>}
       </form>
     </div>
   );
