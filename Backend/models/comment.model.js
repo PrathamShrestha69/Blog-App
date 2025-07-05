@@ -3,10 +3,6 @@ import { Schema } from "mongoose";
 
 const commentSchema = new Schema(
   {
-    desc: {
-      type: String,
-      required: true,
-    },
     posts: {
       type: Schema.Types.ObjectId,
       ref: "Posts",
@@ -16,6 +12,10 @@ const commentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       reuired: true,
+    },
+    desc: {
+      type: String,
+      required: true,
     },
   },
   { timestamps: true }
